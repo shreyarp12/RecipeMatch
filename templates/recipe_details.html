@@ -1,0 +1,67 @@
+{% extends 'base.html' %}
+{% block content %}
+<style>
+    .interactive-list li { list-style: none; padding: 12px 15px; background: var(--bg-color); margin-bottom: 10px; border-radius: 8px; display: flex; align-items: center; gap: 12px; cursor: pointer; transition: 0.2s; border: 1px solid #eee; }
+    .interactive-list li:hover { background: #f1f1f1; transform: scale(1.02); }
+    .interactive-list li.checked { text-decoration: line-through; opacity: 0.6; background: #e8f5e9; border-color: var(--secondary); }
+    .interactive-list li input[type="checkbox"] { transform: scale(1.2); pointer-events: none; }
+
+    .step-card { background: white; padding: 20px; border-left: 5px solid var(--primary); margin-bottom: 15px; border-radius: 0 10px 10px 0; box-shadow: 0 4px 10px rgba(0,0,0,0.04); transition: 0.3s;}
+    .step-card:hover { transform: translateX(10px); border-left-color: var(--accent); }
+    .step-number { font-size: 1.1rem; font-weight: bold; color: var(--primary); margin-bottom: 8px; text-transform: uppercase; letter-spacing: 1px; }
+</style>
+
+<div class="form-card large" style="max-width: 900px; padding: 35px; margin-top: 20px;">
+    
+    <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; margin-bottom: 15px;">
+        <h1 style="color: var(--primary); font-size: 2.5rem; margin: 0;">{{ recipe.recipe_name }}</h1>
+        <span style="background: var(--accent); padding: 5px 15px; border-radius: 20px; font-weight: bold; color: #333;">{{ recipe.category }}</span>
+    </div>
+
+    <p class="text-muted" style="font-size: 1.1rem; line-height: 1.8;">{{ recipe.description }}</p>
+
+    <div style="display: flex; gap: 20px; margin: 25px 0; padding: 20px; background: var(--bg-color); border-radius: 12px; border: 1px solid #eee;">
+        <p style="margin: 0;"><strong><i class="fas fa-clock" style="color: var(--primary);"></i> Prep Time:</strong> {{ recipe.prep_time }} mins</p>
+        <p style="margin: 0; border-left: 2px solid #ddd; padding-left: 20px;"><strong><i class="fas fa-signal" style="color: var(--primary);"></i> Difficulty:</strong> {{ recipe.difficulty }}</p>
+    </div>
+
+    <hr style="margin: 30px 0; border: none; border-top: 2px dashed #ddd;">
+
+    <div class="form-row" style="grid-template-columns: 1fr 1.5fr; gap: 40px;">
+        <div>
+            <h3 style="margin-bottom: 10px; color: var(--text-main); font-size: 1.5rem;"><i class="fas fa-shopping-basket"></i> Ingredients</h3>
+            <p class="text-muted" style="font-size: 0.85rem; margin-bottom: 15px;">(Click items to check them off)</p>
+            
+            <ul class="interactive-list" id="ingredientList">
+                {% for ing in recipe.ingredients %}
+                    <li onclick="this.classList.toggle('checked'); const cb = this.querySelector('input'); cb.checked = !cb.checked;">
+                        <input type="checkbox">
+                        <span><strong>{{ ing.quantity }} {{ ing.unit }}</strong> - {{ ing.name }}</span>
+                    </li>
+                {% else %}
+                    <li class="text-muted">No ingredients listed.</li>
+                {% endfor %}
+            </ul>
+        </div>
+
+        <div>
+            <h3 style="margin-bottom: 25px; color: var(--text-main); font-size: 1.5rem;"><i class="fas fa-list-ul"></i> Instructions</h3>
+            <div>
+                {% for step in recipe.instructions %}
+                    <div class="step-card">
+                        <div class="step-number">Step {{ step.step_number }}</div>
+                        <div style="color: #444; line-height: 1.6;">{{ step.instruction }}</div>
+                    </div>
+                {% else %}
+                    <p class="text-muted">No instructions listed.</p>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+
+    <div style="margin-top: 50px; text-align: center; padding-top: 20px; border-top: 1px solid #eee;">
+        <a href="{{ url_for('discover') }}" class="btn-outline btn-large" style="margin-right: 15px;"><i class="fas fa-arrow-left"></i> Back to Recipes</a>
+        <button class="btn-primary btn-large" onclick="window.print()"><i class="fas fa-print"></i> Print Recipe</button>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,14 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="text-center" style="padding: 60px 20px;">
+    <h1 style="font-size: 3rem; color: var(--primary); margin-bottom: 20px;">Discover Delicious Recipes From What You Have</h1>
+    <p style="font-size: 1.2rem; color: var(--text-muted); margin-bottom: 40px; max-width: 600px; margin-inline: auto;">
+        Stop wondering what's for dinner. Tell us what's in your fridge, and our Smart Matching & AI Chef will handle the rest!
+    </p>
+    {% if current_user.is_authenticated %}
+        <a href="{{ url_for('discover') }}" class="btn-primary btn-large" style="font-size: 1.2rem; padding: 15px 40px;">Open My Kitchen</a>
+    {% else %}
+        <a href="{{ url_for('register') }}" class="btn-primary btn-large" style="font-size: 1.2rem; padding: 15px 40px;">Get Started for Free</a>
+    {% endif %}
+</div>
+{% endblock %}

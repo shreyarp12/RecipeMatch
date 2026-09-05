@@ -1,0 +1,49 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<div class="form-card large text-center" style="margin-top: 20px; border-top: 5px solid var(--primary);">
+    <h1 style="color: var(--primary); margin-bottom: 10px;">What are you craving?</h1>
+    <p class="text-muted" style="margin-bottom: 25px;">Search for a recipe (e.g., "Pasta") OR type the ingredients you have (e.g., "chicken, rice")</p>
+    
+    <form method="POST" id="searchForm">
+        <input type="text" name="search_query" id="searchInput" placeholder="Type a recipe name or ingredients here..." 
+               style="font-size: 1.2rem; padding: 15px; border-radius: 30px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); border: 2px solid #eee; margin-bottom: 20px;">
+        
+        <div style="text-align: center; margin-bottom: 25px; background: var(--bg-color); padding: 15px; border-radius: 10px;">
+            <p style="margin-bottom: 10px; font-weight: 500;">Adding multiple ingredients for the AI?</p>
+            <input type="text" id="customIngInput" placeholder="e.g. Soy Sauce..." style="width: 250px; display: inline-block;">
+            <button type="button" class="btn-outline" onclick="addCustomIngredient()" style="padding: 11px 20px;">Add to Kitchen</button>
+            <div id="selectedChips" class="chips-container" style="justify-content: center; margin-top: 10px;"></div>
+        </div>
+
+        <div style="display: flex; gap: 15px; justify-content: center; flex-wrap: wrap;">
+            <button type="submit" formaction="{{ url_for('search') }}" class="btn-primary btn-large">
+                <i class="fas fa-search"></i> Search Recipes
+            </button>
+            <button type="submit" formaction="{{ url_for('generate_ai_recipe') }}" class="btn-outline btn-large" onclick="startAIChef()">
+                <span id="aiBtnText">✨ Ask AI Chef</span>
+            </button>
+        </div>
+    </form>
+</div>
+
+<div style="margin-top: 40px;">
+    {% for category, recipes in categorized_recipes.items() %}
+        <div style="margin-bottom: 40px;">
+            <h2 style="border-bottom: 3px solid var(--primary); padding-bottom: 10px; margin-bottom: 20px; display: inline-block;">{{ category }}</h2>
+            <div class="recipe-grid">
+                {% for recipe in recipes %}
+                <div class="recipe-card" style="padding: 20px;">
+                    <div class="recipe-content" style="padding: 0;">
+                        <span style="font-size: 0.8rem; background: #eee; padding: 3px 8px; border-radius: 4px; font-weight: 600;">{{ recipe.category }}</span>
+                        <h3 style="margin-top: 8px;">{{ recipe.recipe_name }}</h3>
+                        <p class="text-muted" style="margin: 5px 0 15px 0;">⏱️ {{ recipe.prep_time }} mins | 📊 {{ recipe.difficulty }}</p>
+                        <a href="{{ url_for('recipe_details', id=recipe.id) }}" class="btn-outline w-100">View Recipe</a>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    {% endfor %}
+</div>
+{% endblock %}

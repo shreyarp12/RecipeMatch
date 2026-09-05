@@ -1,0 +1,37 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="form-card large">
+    <div style="background: linear-gradient(135deg, var(--primary), var(--accent)); padding: 20px; border-radius: 10px; color: white; margin-bottom: 20px;">
+        <h3 style="margin-bottom: 0;">✨ AI Generated Recipe</h3>
+        <p style="font-size: 0.9rem; opacity: 0.9;">Created based on: {{ original_ingredients | join(', ') }}</p>
+    </div>
+
+    <h1 style="color: var(--primary);">{{ recipe.recipe_name }}</h1>
+    <p class="text-muted" style="margin-bottom: 20px;">{{ recipe.description }}</p>
+    <p><strong>Prep Time:</strong> {{ recipe.prep_time }} mins | <strong>Difficulty:</strong> {{ recipe.difficulty }}</p>
+    
+    <hr style="margin: 20px 0;">
+    <div class="form-row">
+        <div>
+            <h3>Ingredients</h3>
+            <ul>
+                {% for ing in recipe.ingredients %}
+                    <li><strong>{{ ing.quantity }} {{ ing.unit }}</strong> {{ ing.name }}</li>
+                {% endfor %}
+            </ul>
+        </div>
+        <div>
+            <h3>Instructions</h3>
+            <ol>
+                {% for step in recipe.instructions %}
+                    <li style="margin-bottom: 10px;">{{ step }}</li>
+                {% endfor %}
+            </ol>
+        </div>
+    </div>
+    
+    <div class="text-center mt-2">
+        <a href="{{ url_for('discover') }}" class="btn-outline">Back to Kitchen</a>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+{% block content %}
+<h2>We found {{ results|length }} recipes for you!</h2>
+<div class="recipe-grid">
+    {% for res in results %}
+    <div class="recipe-card">
+        <img src="{{ res.recipe.image_url }}" alt="{{ res.recipe.recipe_name }}" class="recipe-img">
+        <div class="recipe-content">
+            <div class="match-badge {% if res.match_pct > 75 %}high{% elif res.match_pct > 40 %}med{% else %}low{% endif %}">
+                {{ res.match_pct }}% Match
+            </div>
+            <h3>{{ res.recipe.recipe_name }}</h3>
+            <p class="text-muted">{{ res.recipe.prep_time }} mins | {{ res.recipe.difficulty }}</p>
+            {% if res.missing_count > 0 %}
+                <p style="color: var(--danger); font-size: 0.9rem;">Missing: {{ res.missing_names | join(', ') }}</p>
+            {% else %}
+                <p style="color: var(--secondary); font-weight: bold;">You have everything!</p>
+            {% endif %}
+            <a href="{{ url_for('recipe_details', id=res.recipe.id) }}" class="btn-outline w-100 mt-1">View Recipe</a>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}

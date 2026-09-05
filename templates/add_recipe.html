@@ -1,0 +1,60 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="form-card large">
+    <h2>Create Recipe</h2>
+    <form method="POST">
+        <div class="form-group"><label>Recipe Name</label><input type="text" name="recipe_name" required></div>
+        <div class="form-row">
+            <div class="form-group"><label>Prep Time (mins)</label><input type="number" name="prep_time" required></div>
+            <div class="form-group">
+                <label>Category</label>
+                <select name="category">
+                    <option>Main Course</option><option>Snacks</option><option>Drinks</option><option>Dessert</option>
+                </select>
+            </div>
+        </div>
+        <div class="form-group">
+            <label>Difficulty</label>
+            <select name="difficulty"><option>Easy</option><option>Medium</option><option>Hard</option></select>
+        </div>
+        <div class="form-group"><label>Description</label><textarea name="description" rows="2"></textarea></div>
+        
+        <hr style="margin: 20px 0;">
+        <h3>Ingredients</h3>
+        <div id="ingredient-section">
+            <div class="dynamic-row">
+                <input type="text" name="ingredient_name[]" placeholder="Ingredient (e.g. Tomato)" required>
+                <input type="text" name="quantity[]" placeholder="Qty" required>
+                <input type="text" name="unit[]" placeholder="Unit">
+                <button type="button" class="btn-danger" onclick="this.parentElement.remove()">X</button>
+            </div>
+        </div>
+        <button type="button" class="btn-outline" onclick="addIngredientRow()">+ Add Ingredient</button>
+
+        <hr style="margin: 20px 0;">
+        <h3>Instructions</h3>
+        <div id="instruction-section">
+            <div class="dynamic-row">
+                <textarea name="instruction[]" placeholder="Step 1" required></textarea>
+                <button type="button" class="btn-danger" onclick="this.parentElement.remove()">X</button>
+            </div>
+        </div>
+        <button type="button" class="btn-outline" onclick="addInstructionRow()">+ Add Step</button>
+        <button type="submit" class="btn-primary w-100 mt-2">Save Recipe</button>
+    </form>
+</div>
+
+<div id="ing-template" style="display:none;">
+    <div class="dynamic-row">
+        <input type="text" name="ingredient_name[]" placeholder="Ingredient name" required>
+        <input type="text" name="quantity[]" placeholder="Qty" required><input type="text" name="unit[]" placeholder="Unit">
+        <button type="button" class="btn-danger" onclick="this.parentElement.remove()">X</button>
+    </div>
+</div>
+<div id="inst-template" style="display:none;">
+    <div class="dynamic-row">
+        <textarea name="instruction[]" placeholder="Next step..." required></textarea>
+        <button type="button" class="btn-danger" onclick="this.parentElement.remove()">X</button>
+    </div>
+</div>
+{% endblock %}
