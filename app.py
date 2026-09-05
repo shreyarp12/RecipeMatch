@@ -22,8 +22,9 @@ db = SQLAlchemy(app)
 login_manager = LoginManager(app)
 login_manager.login_view = 'login'
 
-# Initialize the GenAI Client with your API Key
+# Initialize the GenAI Client securely using the environment variable
 client = genai.Client(api_key=os.getenv("GEMINI_API_KEY"))
+
 # ================= DB MODELS =================
 class User(UserMixin, db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -139,9 +140,8 @@ def generate_ai_recipe():
     }}
     """
     try:
-        # Updated to the current standard model ID
         response = client.models.generate_content(
-            model='gemini-3.6-flash',
+            model='gemini-2.5-flash',
             contents=prompt,
         )
         raw_text = response.text.strip()
@@ -194,34 +194,32 @@ def add_recipe():
         return redirect(url_for('recipe_details', id=recipe.id))
     return render_template('add_recipe.html')
 
-# ================= DATABASE SEEDING =================
-def init_db():
-    with app.app_context():
-        db.create_all()
-        if not User.query.first():
-            test_user = User(full_name="Admin", email="admin@test.com", password_hash=generate_password_hash("password"))
-            db.session.add(test_user)
+# ================= DATABASE INITIALIZATION & SEEDING =================
+with app.app_context():
+    db.create_all()
+    if not User.query.first():
+        test_user = User(full_name="Admin", email="admin@test.com", password_hash=generate_password_hash("password"))
+        db.session.add(test_user)
+        db.session.flush()
+
+        for r_data in recipes_data:
+            recipe = Recipe(
+                user_id=test_user.id,
+                recipe_name=r_data["name"],
+                description=f"Delicious homemade {r_data['name']}.",
+                prep_time=r_data["time"],
+                difficulty="Easy" if r_data["time"] <= 15 else "Medium",
+                category=r_data["cat"]
+            )
+            db.session.add(recipe)
             db.session.flush()
 
-            for r_data in recipes_data:
-                recipe = Recipe(
-                    user_id=test_user.id,
-                    recipe_name=r_data["name"],
-                    description=f"Delicious homemade {r_data['name']}.",
-                    prep_time=r_data["time"],
-                    difficulty="Easy" if r_data["time"] <= 15 else "Medium",
-                    category=r_data["cat"]
-                )
-                db.session.add(recipe)
-                db.session.flush()
+            for ing in r_data["ings"]:
+                db.session.add(RecipeIngredient(recipe_id=recipe.id, name=ing[0], quantity=ing[1], unit=ing[2]))
+            for idx, step in enumerate(r_data["inst"]):
+                db.session.add(RecipeInstruction(recipe_id=recipe.id, step_number=idx+1, instruction=step))
 
-                for ing in r_data["ings"]:
-                    db.session.add(RecipeIngredient(recipe_id=recipe.id, name=ing[0], quantity=ing[1], unit=ing[2]))
-                for idx, step in enumerate(r_data["inst"]):
-                    db.session.add(RecipeInstruction(recipe_id=recipe.id, step_number=idx+1, instruction=step))
-
-            db.session.commit()
+        db.session.commit()
 
 if __name__ == '__main__':
-    init_db()
     app.run(debug=True)
